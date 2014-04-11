@@ -7,34 +7,22 @@
   tags: [ "syslog" , "yum" ]
 
 - {include: server.yml, when: '"syslog_server" in group_names'}
-- {include: server.yml, when: '"syslog_relay" in group_names'}
+- {include: relay.yml, when: '"syslog_relay" in group_names'}
 
 - name: Copy main rsyslog shipper config
-  template: src=shipper.conf.j2
-            dest=/etc/rsyslog.d/shipper.conf
-            owner=root
-            group=root
-            mode=0644
+  template: src=shipper.conf.j2 dest=/etc/rsyslog.d/shipper.conf owner=root group=root mode=0644
   notify: restart rsyslog
   when: '"syslog" not in group_names'
   tags: [ "syslog" , "config" , "slcc" ]
 
 - name: Copy logstash imfile config
-  copy: src=etc-rsyslog.d-logstash.conf
-        dest=/etc/rsyslog.d/logstash.conf
-        owner=root
-        group=root
-        mode=0644
+  copy: src=etc-rsyslog.d-logstash.conf dest=/etc/rsyslog.d/logstash.conf owner=root group=root mode=0644
   notify: restart rsyslog
   when: '"ls_parser" or "ls_shipper" in group_names'
   tags: [ "syslog" , "config" , "slcc" ]
 
 - name: Copy redis imfile config
-  copy: src=etc-rsyslog.d-redis.conf
-        dest=/etc/rsyslog.d/redis.conf
-        owner=root
-        group=root
-        mode=0644
+  copy: src=etc-rsyslog.d-redis.conf dest=/etc/rsyslog.d/redis.conf owner=root group=root mode=0644
   notify: restart rsyslog
   when: '"redis" in group_names'
   tags: [ "syslog" , "config" , "slcc" ]
