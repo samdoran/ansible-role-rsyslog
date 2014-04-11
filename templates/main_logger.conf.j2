@@ -1,0 +1,153 @@
+# Make sure we can use the correct mask
+$umask 0000
+
+
+
+# --- Open TCP and UDP Ports --- #
+
+# UDP syslog reception
+module(load="imudp")
+input(type="imudp" port="{{ rsyslog_udp_port }}")
+
+# Unencrypted TCP syslog reception
+module(load="imptcp")
+input(type="imptcp" port="{{ rsyslog_tcp_port }}")
+
+# Encrypted TCP syslog reception using TLS
+$DefaultNetstreamDriver gtls
+$DefaultNetstreamDriverCAFile   /etc/pki/rsyslog/rsyslog-ca.pem
+$DefaultNetstreamDriverCertFile /etc/pki/rsyslog/cert.pem
+$DefaultNetstreamDriverKeyFile  /etc/pki/rsyslog/key.pem
+
+module(load="imtcp" StreamDriver.Mode="1" StreamDriver.AuthMode="anon")
+input(type="imtcp" port="{{ rsyslog_tls_port }}")
+
+
+{% raw %}
+# --- File naming templates --- #
+
+# local 0
+# Store imfile logs using the tag (without the colon) for the filename
+# Tags are defined in each imfile config on the sending clients, formatted as "apache-access:" or "audit:"
+# /var/log/remote/hostname/[tag up to first "-" or ":"]/[tag without ":"-YYYYMMDD.raw.log]
+template(name="imfile_log_name_raw" type="string"
+    string="/var/log/remote/%HOSTNAME%/%syslogtag:R,ERE,1,FIELD:(^[^-:]+)[-:]--end%/%syslogtag:R,ERE,1,FIELD:([^:]*)--end%-%$YEAR%%$MONTH%%$DAY%.raw.log"
+)
+
+# local 1
+# Store imfile logs using the tag (without the colon) for the filename
+# /var/log/remote/hostname/[tag up to first "-" or ":"]/[tag without ":"-YYYYMMDD.raw.json.log]
+template(name="imfile_log_name_json" type="string"
+    string="/var/log/remote/%HOSTNAME%/%syslogtag:R,ERE,1,FIELD:(^[^-:]+)[-:]--end%/%syslogtag:R,ERE,1,FIELD:([^:]*)--end%-%$YEAR%%$MONTH%%$DAY%.raw.json.log"
+)
+
+# local 2
+# Store files in /var/log/remote/[hostname]/[program]/[program]-YYYYMMDD.syslog.json.log
+# Regex removes "(" that showed up in some program names
+template(name="syslog_name_json" type="string"
+    string="/var/log/remote/%HOSTNAME%/%app-name:R,ERE,1,FIELD:([^(]*)--end%/%app-name:R,ERE,1,FIELD:([^(]*)--end%-%$YEAR%%$MONTH%%$DAY%.syslog.json.log"
+)
+
+
+
+# --- Log format templates --- #
+
+# local 0
+# local 1 (because the imfile is already formatted in JSON from the outputting program)
+# Store just the raw log
+template(name="RawLogFormat" type="string"
+    string="%msg:::drop-last-lf%\n"
+)
+
+# Add PRI to standard format
+template(name="TraditionalFormatWithPRI" type="string"
+    string="%pri-text%: %timestamp:::date-rfc3339% %HOSTNAME% %syslogtag%%msg:::drop-last-lf%\n"
+)
+
+# local 2
+# Store log files in JSON
+template(name="SyslogJSONFormat" type="string"
+    string="{%timestamp:::date-rfc3339,jsonf:@timestamp%,%source:::jsonf:source_host%,\"source_ip\":\"%fromhost-ip:::json%\",\"message\":\"%timestamp% %syslogtag%%msg:::json%\",%app-name:::jsonf:program%,%syslogfacility-text:::jsonf:facility%,%syslogseverity-text:::jsonf:severity%,%procid:::jsonf:processid%}\n"
+)
+{% endraw %}
+
+
+# --- Write files to disk --- #
+
+# Logs are stored with only the raw message
+# Used for audit logs
+# Saved as /var/log/remote/[host]/[program]/[program]-YYYYMMDD.raw.log
+if $syslogfacility-text == 'local0' then {
+    action(type="omfile"
+        DynaFile="imfile_log_name_raw"
+        DirCreateMode="0750"
+        FileCreateMode="0640"
+        DirOwner="root"
+        DirGroup="logreader"
+        FileOwner="root"
+        FileGroup="logreader"
+        Template="RawLogFormat"
+    )
+    stop
+}
+
+# Logs should be coming in from the application already in JSON.
+# Usually apache access and nginx access.
+# Saved as /var/log/remote/[host]/[tag]/[tag]-YYYYMMDD.raw.json.log
+if $syslogfacility-text == 'local1' then {
+    action(type="omfile"
+        DynaFile="imfile_log_name_json"
+        DirCreateMode="0750"
+        FileCreateMode="0640"
+        DirOwner="root"
+        DirGroup="logreader"
+        FileOwner="root"
+        FileGroup="logreader"
+        Template="RawLogFormat"
+    )
+    stop
+}
+
+# Wrap logs in JSON
+# Used for apache error logs
+# Saved as /var/log/remote/[host]/[tag]/[tag]-YYYYMMDD.syslog.json.log
+if $syslogfacility-text == 'local2' then {
+    action(type="omfile"
+        DynaFile="syslog_name_json"
+        DirCreateMode="0750"
+        FileCreateMode="0640"
+        DirOwner="root"
+        DirGroup="logreader"
+        FileOwner="root"
+        FileGroup="logreader"
+        Template="SyslogJSONFormat"
+    )
+    stop
+}
+
+# Wrap standard syslog messages in JSON
+# /var/log/remote/[host]/[program]/[program]-YYYYMMDD.syslog.json.log
+if $hostname != '{{ ansible_hostname }}' then {
+    action(type="omfile"
+        DynaFile="syslog_name_json"
+        DirCreateMode="0750"
+        FileCreateMode="0640"
+        DirOwner="root"
+        DirGroup="logreader"
+        FileOwner="root"
+        FileGroup="logreader"
+        Template="SyslogJSONFormat"
+    )
+    stop
+} else { # Store a copy of local logs in /var/log/remote
+    *.* action(type="omfile"
+            DynaFile="syslog_name_json"
+            DirCreateMode="0750"
+            FileCreateMode="0640"
+            DirOwner="root"
+            DirGroup="logreader"
+            FileOwner="root"
+            FileGroup="logreader"
+            Template="SyslogJSONFormat"
+        )
+}

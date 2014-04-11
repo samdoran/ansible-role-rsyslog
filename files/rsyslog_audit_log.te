@@ -1,0 +1,17 @@
+# How to compile http://wiki.centos.org/HowTos/SELinux
+
+module rsyslog_audit_log 1.0;
+
+require {
+    type syslogd_t;
+    type auditd_log_t;
+    class dir search;
+    class file read;
+    class file ioctl;
+    class file open;
+    class file getattr;
+}
+
+#============= syslogd_t ==============
+allow syslogd_t auditd_log_t:dir search;
+allow syslogd_t auditd_log_t:file { read ioctl open getattr };

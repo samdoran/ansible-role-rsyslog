@@ -1,0 +1,27 @@
+# TCP {{ rsyslog_tcp_port }} and UDP {{ rsyslog_udp_port }} for unecrypted traffic
+{% if encrypt_syslog == 'true' and transport == 'tcp' %}
+# Server uses TCP {{ rsyslog_tls_port }} for encrytped traffic,
+$DefaultNetstreamDriverCAFile /etc/pki/rsyslog/rsyslog-ca.pem
+$DefaultNetstreamDriver gtls            # use gtls netstream driver
+$ActionSendStreamDriverMode 1           # require TLS for the connection
+$ActionSendStreamDriverAuthMode anon    # server is NOT authenticated
+{% endif %}
+
+# An on-disk queue is created for this action. If the remote host is
+# down, messages are spooled to disk and sent when it is up again.
+
+$WorkDirectory /var/lib/rsyslog # where to place spool files
+$ActionQueueFileName fwdRule1   # unique name prefix for spool files
+$ActionQueueMaxDiskSpace 1g     # 1gb space limit (use as much as possible)
+$ActionQueueSaveOnShutdown on   # save messages to disk on shutdown
+$ActionQueueType LinkedList     # run asynchronously
+$ActionResumeRetryCount -1      # infinite retries if host is down
+
+{% if encrypt_syslog == 'true' and transport == 'tcp' %}
+*.* @@{{ rsyslog_collector }}:{{ rsyslog_tls_port }}       # Send everything via TCP {{ rsyslog_tls_port }}
+{% elif transport == 'tcp' %}
+*.* @@{{ rsyslog_collector }}:{{ rsyslog_tcp_port }}       # Send everything via TCP {{ rsyslog_tcp_port }}
+{% elif transport == 'udp' %}
+*.* @{{ rsyslog_collector }}:{{ rsyslog_udp_port }}       # Send everything via UDP {{ rsyslog_udp_port }}
+{% endif %}
+# & ~

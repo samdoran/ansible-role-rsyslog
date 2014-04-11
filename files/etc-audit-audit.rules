@@ -1,0 +1,114 @@
+## This file contains the auditctl rules that are loaded
+# whenever the audit daemon is started via the initscripts.
+# The rules are simply the parameters that would be passed # to auditctl.
+#
+#
+# First rule - delete all
+-D
+# Increase the buffers to survive stress events. # Make this bigger for busy systems
+-b 16384
+##
+# the panic failure flag -f 2 ensures that your
+# audit records are complete even if the system
+# is encountering critical errors:
+-f 2
+##
+# Failed file & program access attempts:
+#-a exit,always -F arch=b64 -S open -F success!=0 -k access
+##
+# Audit file & program deletion:
+-a always,exit -F arch=b64 -S mkdir -k delete
+-a always,exit -F arch=b64 -S rmdir -k delete
+-a always,exit -F arch=b64 -S unlink -k delete
+##
+# Audit administrative, privileged, and security options:
+-w /bin/su
+-w /usr/bin/passwd
+-w /usr/bin/sudo
+##
+# Audit DACL modifications:
+-a always,exit -F arch=b64 -S chmod -k perm_mod
+-a always,exit -F arch=b64 -S fchmod -k perm_mod
+-a always,exit -F arch=b64 -S chown -k perm_mod
+-a always,exit -F arch=b64 -S fchown -k perm_mod
+-a always,exit -F arch=b64 -S lchown -k perm_mod
+-a always,exit -F arch=b64 -S truncate -k perm_mod
+-a always,exit -F arch=b64 -S ftruncate -k perm_mod
+-a always,exit -F arch=b64 -S rename -k perm_mod
+-a always,exit -F arch=b64 -S link -k perm_mod
+-a always,exit -F arch=b64 -S symlink -k perm_mod
+-a always,exit -F arch=b64 -S setxattr -k perm_mod
+-a always,exit -F arch=b64 -S lsetxattr -k perm_mod
+-a always,exit -F arch=b64 -S fsetxattr -k perm_mod
+-a always,exit -F arch=b64 -S removexattr -k perm_mod
+-a always,exit -F arch=b64 -S lremovexattr -k perm_mod
+-a always,exit -F arch=b64 -S fremovexattr -k perm_mod
+-a always,exit -F arch=b64 -S mknod -k perm_mod
+-a always,exit -F arch=b64 -S mount -k perm_mod
+-a always,exit -F arch=b64 -S umount2 -k perm_mod
+##
+# Login-logout & session initialization:
+-w /bin/login -k login
+##
+# Monitoring Miscellaneous System Calls:
+-a always,exit -F arch=b64 -S umask -k system
+##
+# Add your files to monitor below this line:
+# -w /var/log/audit/audit.log -k file_mod
+-w /etc/audit/auditd.conf -p wa -k file_mod
+-w /var/run/utmp -p wa -k session -k file_mod
+-w /var/log/btmp -p wa -k session -k file_mod
+-w /var/log/wtmp -p wa -k session -k file_mod
+-w /etc/audit/audit.rules -p wa -k file_mod
+-w /etc/libaudit.conf -p wa -k file_mod
+-w /etc/sysconfig/auditd -p wa -k file_mod
+-w /var/spool/atspool -k file_mod
+-w /etc/at.allow -k file_mod
+-w /etc/at.deny -k file_mod
+#
+-w /etc/cron.allow -p wa -k file_mod
+-w /etc/cron.deny -p wa -k file_mod
+-w /etc/cron.d/ -p wa -k file_mod
+-w /etc/cron.daily/ -p wa -k file_mod
+-w /etc/cron.hourly/ -p wa -k file_mod
+-w /etc/cron.monthly/ -p wa -k file_mod
+-w /etc/cron.weekly/ -p wa -k file_mod
+-w /etc/crontab -p w -k file_mod
+-w /var/spool/cron/roo -k file_mod
+#
+-w /etc/group -p wa -k identity -k file_mod
+-w /etc/passwd -p wa -k identity -k file_mod
+-w /etc/gshadow -p wa -k identity -k file_mod
+-w /etc/shadow -p wa -k identity -k file_mod
+-w /etc/security/opasswd -p wa -k identity
+-w /etc/login.defs -p wa -k file_mod
+-w /etc/securetty -k file_mod
+-w /var/log/faillog -k file_mod
+-w /var/log/lastlog -k file_mod
+-w /etc/hosts -p wa -k file_mod
+-w /etc/sysconfig/ -k file_mod
+#
+-w /etc/inittab -p wa -k file_mod
+-w /etc/init.d/ -k file_mod
+-w /etc/init.d/auditd -p wa -k file_mod
+#
+-w /etc/ld.so.conf -p wa -k file_mod
+#
+-w /etc/localtime -p wa -k file_mod
+#
+-w /etc/sysctl.conf -p wa -k file_mod
+#
+-w /etc/modprobe.d/ -k file_mod
+-w /etc/modprobe.conf.local -p wa -k file_mod
+-w /etc/modprobe.conf -p wa -k file_mod
+#
+-w /etc/pam.d/ -k file_mod
+#
+-w /etc/aliases -p wa -k file_mod
+-w /etc/postfix/ -p wa -k file_mod
+#
+-w /etc/ssh/sshd_config -p wa -k file_mod
+#
+## Apache
+-w /etc/httpd/ -p wa -k file_mod
+#

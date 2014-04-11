@@ -1,0 +1,18 @@
+# --- Open TCP and UDP Ports --- #
+
+# UDP syslog reception
+module(load="imudp")
+input(type="imudp" port="{{ rsyslog_udp_port }}")
+
+# Unencrypted TCP syslog reception
+module(load="imptcp")
+input(type="imptcp" port="{{ rsyslog_tcp_port }}")
+
+# Encrypted TCP syslog reception using TLS
+$DefaultNetstreamDriver gtls
+$DefaultNetstreamDriverCAFile   /etc/pki/rsyslog/rsyslog-ca.pem
+$DefaultNetstreamDriverCertFile /etc/pki/rsyslog/cert.pem
+$DefaultNetstreamDriverKeyFile  /etc/pki/rsyslog/key.pem
+
+module(load="imtcp" StreamDriver.Mode="1" StreamDriver.AuthMode="anon")
+input(type="imtcp" port="{{ rsyslog_tls_port }}")
