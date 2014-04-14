@@ -13,14 +13,6 @@ input(type="imudp" port="{{ rsyslog_udp_port }}")
 module(load="imptcp")
 input(type="imptcp" port="{{ rsyslog_tcp_port }}")
 
-# Encrypted TCP syslog reception using TLS
-$DefaultNetstreamDriver gtls
-$DefaultNetstreamDriverCAFile   /etc/pki/rsyslog/rsyslog-ca.pem
-$DefaultNetstreamDriverCertFile /etc/pki/rsyslog/cert.pem
-$DefaultNetstreamDriverKeyFile  /etc/pki/rsyslog/key.pem
-
-module(load="imtcp" StreamDriver.Mode="1" StreamDriver.AuthMode="anon")
-input(type="imtcp" port="{{ rsyslog_tls_port }}")
 
 
 {% raw %}
@@ -125,21 +117,22 @@ if $syslogfacility-text == 'local2' then {
     stop
 }
 
-# Wrap standard syslog messages in JSON
-# /var/log/remote/[host]/[program]/[program]-YYYYMMDD.syslog.json.log
+# Store logs that are not from this host and did not match the above rules in
+# /var/log/remote/[host]/[program]/[program]-YYYYMMDD.syslog.raw.log
 if $hostname != '{{ ansible_hostname }}' then {
     action(type="omfile"
-        DynaFile="syslog_name_json"
+        DynaFile="imfile_log_name_raw"
         DirCreateMode="0750"
         FileCreateMode="0640"
         DirOwner="root"
         DirGroup="logreader"
         FileOwner="root"
         FileGroup="logreader"
-        Template="SyslogJSONFormat"
+        Template="RawLogFormat"
     )
     stop
-} else { # Store a copy of local logs in /var/log/remote
+} else {
+    # Store a copy of logs from this host in /var/log/remote
     *.* action(type="omfile"
             DynaFile="syslog_name_json"
             DirCreateMode="0750"
