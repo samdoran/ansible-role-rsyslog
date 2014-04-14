@@ -8,11 +8,26 @@ input(type="imudp" port="{{ rsyslog_udp_port }}")
 module(load="imptcp")
 input(type="imptcp" port="{{ rsyslog_tcp_port }}")
 
-# Encrypted TCP syslog reception using TLS
-$DefaultNetstreamDriver gtls
-$DefaultNetstreamDriverCAFile   /etc/pki/rsyslog/rsyslog-ca.pem
-$DefaultNetstreamDriverCertFile /etc/pki/rsyslog/cert.pem
-$DefaultNetstreamDriverKeyFile  /etc/pki/rsyslog/key.pem
-
-module(load="imtcp" StreamDriver.Mode="1" StreamDriver.AuthMode="anon")
-input(type="imtcp" port="{{ rsyslog_tls_port }}")
+# --- Forward to rsyslog collector --- #
+# After shipping logs not from this host, stop processing them so they don't
+# clog the local log files
+if $hostname != '{{ ansible_hostname }}' then {
+    {% if encrypt_syslog == 'true' and transport == 'tcp' %}
+    action(type="omfwd" target="{{ rsyslog_collector }}" protocol="{{ transport }}" port="{{ rsyslog_tls_port }}")
+    {% elif transport == 'tcp' %}
+    action(type="omfwd" target="{{ rsyslog_collector }}" protocol="{{ transport }}" port="{{ rsyslog_tcp_port }}")
+    {% elif transport == 'udp' %}
+    action(type="omfwd" target="{{ rsyslog_collector }}" protocol="{{ transport }}" port="{{ rsyslog_udp_port }}")
+    {% endif %}
+    stop
+} else {
+    # Ship logs from this host to the remote collector and continue
+    # to process them so they show up normally
+    {% if encrypt_syslog == 'true' and transport == 'tcp' %}
+    action(type="omfwd" target="{{ rsyslog_collector }}" protocol="{{ transport }}" port="{{ rsyslog_tls_port }}")
+    {% elif transport == 'tcp' %}
+    action(type="omfwd" target="{{ rsyslog_collector }}" protocol="{{ transport }}" port="{{ rsyslog_tcp_port }}")
+    {% elif transport == 'udp' %}
+    action(type="omfwd" target="{{ rsyslog_collector }}" protocol="{{ transport }}" port="{{ rsyslog_udp_port }}")
+    {% endif %}
+}
