@@ -4,7 +4,7 @@
   tags: [ "syslog" , "yum" , "packages" ]
 
 - name: Install rsysog repo
-  copy: src=etc-yum.repos.d-rsyslogall.repo
+  copy: src=rsyslogall.repo
         dest=/etc/yum.repos.d/rsyslogall.repo
         owner=root
         group=root
