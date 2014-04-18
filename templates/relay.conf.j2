@@ -1,3 +1,7 @@
+# Increase max message size to prevent truncating messages
+# 64k is recommended for receiving Windows Event Logs
+$MaxMessageSize 64k
+
 # --- Open TCP and UDP Ports --- #
 
 # UDP syslog reception

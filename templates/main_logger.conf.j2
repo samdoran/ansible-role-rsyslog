@@ -1,6 +1,9 @@
 # Make sure we can use the correct mask
 $umask 0000
 
+# Increase max message size to prevent truncating messages
+# 64k is recommended for receiving Windows Event Logs
+$MaxMessageSize 64k
 
 
 # --- Open TCP and UDP Ports --- #
