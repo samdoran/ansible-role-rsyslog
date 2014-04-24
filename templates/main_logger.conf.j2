@@ -40,7 +40,7 @@ template(name="imfile_log_name_json" type="string"
 # Store files in /var/log/remote/[hostname]/[program]/[program]-YYYYMMDD.syslog.json.log
 # Regex removes "(" that showed up in some program names
 template(name="syslog_name_json" type="string"
-    string="/var/log/remote/%HOSTNAME%/%app-name:R,ERE,1,FIELD:([^(]*)--end%/%app-name:R,ERE,1,FIELD:([^(]*)--end%-%$YEAR%%$MONTH%%$DAY%.syslog.json.log"
+    string="/var/log/remote/%HOSTNAME%/%programname:R,ERE,1,FIELD:([^(]*)--end%/%programname:R,ERE,1,FIELD:([^(]*)--end%-%$YEAR%%$MONTH%%$DAY%.syslog.json.log"
 )
 
 
@@ -62,7 +62,7 @@ template(name="TraditionalFormatWithPRI" type="string"
 # local 2
 # Store log files in JSON
 template(name="SyslogJSONFormat" type="string"
-    string="{%timestamp:::date-rfc3339,jsonf:@timestamp%,%source:::jsonf:source_host%,\"source_ip\":\"%fromhost-ip:::json%\",\"message\":\"%timestamp% %syslogtag%%msg:::json%\",%app-name:::jsonf:program%,%syslogfacility-text:::jsonf:facility%,%syslogseverity-text:::jsonf:severity%,%procid:::jsonf:processid%}\n"
+    string="{%timestamp:::date-rfc3339,jsonf:@timestamp%,%source:::jsonf:source_host%,\"source_ip\":\"%fromhost-ip:::json%\",\"message\":\"%timestamp% %syslogtag%%msg:::json%\",%programname:::jsonf:program%,%syslogfacility-text:::jsonf:facility%,%syslogseverity-text:::jsonf:severity%,%procid:::jsonf:processid%}\n"
 )
 {% endraw %}
 
