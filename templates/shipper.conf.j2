@@ -17,6 +17,27 @@ $ActionQueueSaveOnShutdown on   # save messages to disk on shutdown
 $ActionQueueType LinkedList     # run asynchronously
 $ActionResumeRetryCount -1      # infinite retries if host is down
 
+# Increase max message size to prevent truncating messages
+$MaxMessageSize 32k
+
+{% if "nginx" in group_names %}
+# --- Capture nginx access_log and error_log --- #
+# nginx access log
+$InputFileName /var/log/nginx/access.log
+$InputFileTag nginx-access:
+$InputFileStateFile nginx-access-json-state
+$InputFileFacility local1
+$InputFileSeverity info
+$InputRunFileMonitor
+
+# nginx error log
+$InputFileName /var/log/nginx/error.log
+$InputFileTag nginx-error:
+$InputFileStateFile nginx-error-state
+$InputFileFacility local2
+$InputFileSeverity err
+$InputRunFileMonitor
+
 {% if encrypt_syslog == 'true' and transport == 'tcp' %}
 *.* @@{{ rsyslog_collector }}:{{ rsyslog_tls_port }}       # Send everything via TCP {{ rsyslog_tls_port }}
 {% elif transport == 'tcp' %}
@@ -24,3 +45,45 @@ $ActionResumeRetryCount -1      # infinite retries if host is down
 {% elif transport == 'udp' %}
 *.* @{{ rsyslog_collector }}:{{ rsyslog_udp_port }}       # Send everything via UDP {{ rsyslog_udp_port }}
 {% endif %}
+& ~
+{% endif %}
+
+{% if "ls_parser" in group_names or "ls_shipper" in group_names %}
+# --- Capture logstash logs --- #
+$InputFileName /var/log/logstash/logstash.log
+$InputFileTag logstash:
+$InputFileStateFile logstash-state
+$InputFileFacility local0
+$InputFileSeverity info
+$InputRunFileMonitor
+
+{% if encrypt_syslog == 'true' and transport == 'tcp' %}
+*.* @@{{ rsyslog_collector }}:{{ rsyslog_tls_port }}       # Send everything via TCP {{ rsyslog_tls_port }}
+{% elif transport == 'tcp' %}
+*.* @@{{ rsyslog_collector }}:{{ rsyslog_tcp_port }}       # Send everything via TCP {{ rsyslog_tcp_port }}
+{% elif transport == 'udp' %}
+*.* @{{ rsyslog_collector }}:{{ rsyslog_udp_port }}       # Send everything via UDP {{ rsyslog_udp_port }}
+{% endif %}
+& ~
+{% endif %}
+
+{% if "redis" in group_names %}
+# --- Capture redis logs --- #
+$InputFileName /var/log/redis/redis.log
+$InputFileTag redis:
+$InputFileStateFile redis-state
+$InputFileFacility local2
+$InputFileSeverity info
+$InputRunFileMonitor
+
+{% if encrypt_syslog == 'true' and transport == 'tcp' %}
+*.* @@{{ rsyslog_collector }}:{{ rsyslog_tls_port }}       # Send everything via TCP {{ rsyslog_tls_port }}
+{% elif transport == 'tcp' %}
+*.* @@{{ rsyslog_collector }}:{{ rsyslog_tcp_port }}       # Send everything via TCP {{ rsyslog_tcp_port }}
+{% elif transport == 'udp' %}
+*.* @{{ rsyslog_collector }}:{{ rsyslog_udp_port }}       # Send everything via UDP {{ rsyslog_udp_port }}
+{% endif %}
+& ~
+{% endif %}
+
+
