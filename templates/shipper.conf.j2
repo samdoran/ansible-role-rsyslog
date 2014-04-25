@@ -25,8 +25,8 @@ $MaxMessageSize 32k
 # nginx access log
 $InputFileName /var/log/nginx/access.log
 $InputFileTag nginx-access:
-$InputFileStateFile nginx-access-json-state
-$InputFileFacility local1
+$InputFileStateFile nginx-access-state
+$InputFileFacility local0
 $InputFileSeverity info
 $InputRunFileMonitor
 
@@ -34,21 +34,21 @@ $InputRunFileMonitor
 $InputFileName /var/log/nginx/error.log
 $InputFileTag nginx-error:
 $InputFileStateFile nginx-error-state
-$InputFileFacility local2
+$InputFileFacility local0
 $InputFileSeverity err
 $InputRunFileMonitor
 
 {% if encrypt_syslog == 'true' and transport == 'tcp' %}
-*.* @@{{ rsyslog_collector }}:{{ rsyslog_tls_port }}       # Send everything via TCP {{ rsyslog_tls_port }}
+local0.* @@{{ rsyslog_collector }}:{{ rsyslog_tls_port }}       # Send everything via TCP {{ rsyslog_tls_port }}
 {% elif transport == 'tcp' %}
-*.* @@{{ rsyslog_collector }}:{{ rsyslog_tcp_port }}       # Send everything via TCP {{ rsyslog_tcp_port }}
+local0.* @@{{ rsyslog_collector }}:{{ rsyslog_tcp_port }}       # Send everything via TCP {{ rsyslog_tcp_port }}
 {% elif transport == 'udp' %}
-*.* @{{ rsyslog_collector }}:{{ rsyslog_udp_port }}       # Send everything via UDP {{ rsyslog_udp_port }}
+local0.* @{{ rsyslog_collector }}:{{ rsyslog_udp_port }}       # Send everything via UDP {{ rsyslog_udp_port }}
 {% endif %}
 & ~
 {% endif %}
 
-{% if "ls_parser" in group_names or "ls_shipper" in group_names %}
+{% if "ls_parser" in group_names %}
 # --- Capture logstash logs --- #
 $InputFileName /var/log/logstash/logstash.log
 $InputFileTag logstash:
@@ -58,11 +58,11 @@ $InputFileSeverity info
 $InputRunFileMonitor
 
 {% if encrypt_syslog == 'true' and transport == 'tcp' %}
-*.* @@{{ rsyslog_collector }}:{{ rsyslog_tls_port }}       # Send everything via TCP {{ rsyslog_tls_port }}
+local0.* @@{{ rsyslog_collector }}:{{ rsyslog_tls_port }}       # Send everything via TCP {{ rsyslog_tls_port }}
 {% elif transport == 'tcp' %}
-*.* @@{{ rsyslog_collector }}:{{ rsyslog_tcp_port }}       # Send everything via TCP {{ rsyslog_tcp_port }}
+local0.* @@{{ rsyslog_collector }}:{{ rsyslog_tcp_port }}       # Send everything via TCP {{ rsyslog_tcp_port }}
 {% elif transport == 'udp' %}
-*.* @{{ rsyslog_collector }}:{{ rsyslog_udp_port }}       # Send everything via UDP {{ rsyslog_udp_port }}
+local0.* @{{ rsyslog_collector }}:{{ rsyslog_udp_port }}       # Send everything via UDP {{ rsyslog_udp_port }}
 {% endif %}
 & ~
 {% endif %}
@@ -72,10 +72,21 @@ $InputRunFileMonitor
 $InputFileName /var/log/redis/redis.log
 $InputFileTag redis:
 $InputFileStateFile redis-state
-$InputFileFacility local2
+$InputFileFacility local0
 $InputFileSeverity info
 $InputRunFileMonitor
 
+{% if encrypt_syslog == 'true' and transport == 'tcp' %}
+local0.* @@{{ rsyslog_collector }}:{{ rsyslog_tls_port }}       # Send everything via TCP {{ rsyslog_tls_port }}
+{% elif transport == 'tcp' %}
+local0.* @@{{ rsyslog_collector }}:{{ rsyslog_tcp_port }}       # Send everything via TCP {{ rsyslog_tcp_port }}
+{% elif transport == 'udp' %}
+local0.* @{{ rsyslog_collector }}:{{ rsyslog_udp_port }}       # Send everything via UDP {{ rsyslog_udp_port }}
+{% endif %}
+& ~
+{% endif %}
+
+# Ship all syslogs to {{ rsyslog_collector }}
 {% if encrypt_syslog == 'true' and transport == 'tcp' %}
 *.* @@{{ rsyslog_collector }}:{{ rsyslog_tls_port }}       # Send everything via TCP {{ rsyslog_tls_port }}
 {% elif transport == 'tcp' %}
@@ -83,7 +94,4 @@ $InputRunFileMonitor
 {% elif transport == 'udp' %}
 *.* @{{ rsyslog_collector }}:{{ rsyslog_udp_port }}       # Send everything via UDP {{ rsyslog_udp_port }}
 {% endif %}
-& ~
-{% endif %}
-
 
