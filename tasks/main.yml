@@ -12,4 +12,5 @@
 - name: Copy main rsyslog shipper config
   template: src=shipper.conf.j2 dest=/etc/rsyslog.d/shipper.conf owner=root group=root mode=0644
   notify: restart rsyslog
+  when: '"syslog_collector" not in group_names'
   tags: [ "syslog" , "config" , "slcc" ]
