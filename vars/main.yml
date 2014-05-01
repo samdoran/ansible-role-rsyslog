@@ -1,0 +1,33 @@
+---
+# Write description of local0, etc.
+# group needs to match an ansible group name
+imfile_groups:
+  - group: redis
+    logpath: /var/log/redis/redis.log
+    tag: redis
+    facility: local0
+    severity: info
+
+  - group: ls_parser
+    logpath: /var/log/logstash/logstash.log
+    tag: logstash
+    facility: local0
+    severity: info
+
+  - group: nginx
+    logpath: /var/log/nginx/acces.log
+    tag: nginx-acces
+    facility: local0
+    severity: info
+
+  - group: nginx
+    logpath: /var/log/nginx/error.log
+    tag: nginx-error
+    facility: local0
+    severity: info
+
+  - group: backuppc
+    logpath: /var/log/.log
+    tag: backuppc
+    facility: local0
+    severity: info
