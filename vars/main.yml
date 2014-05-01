@@ -27,7 +27,7 @@ imfile_groups:
     severity: info
 
   - group: backuppc
-    logpath: /var/log/.log
-    tag: backuppc
+    logpath: /var/log/BackupPC/LOG
+    tag: BackupPC
     facility: local0
     severity: info
