@@ -22,12 +22,12 @@ $MaxMessageSize 32k
 
 {% for item in imfile_groups %}
 {% if item.group in group_names %}
-# --- Capture {{item.group}} logs --- #
-$InputFileName {{item.logpath}}
-$InputFileTag {{item.tag}}:
-$InputFileStateFile {{item.tag}}-state
-$InputFileFacility {{item.facility}}
-$InputFileSeverity {{item.severity}}
+# --- Capture {{ item.group }} logs --- #
+$InputFileName {{ item.logpath }}
+$InputFileTag {{ item.tag }}:
+$InputFileStateFile {{ item.tag }}-state
+$InputFileFacility {{ item.facility }}
+$InputFileSeverity {{ item.severity }}
 $InputRunFileMonitor
 
 {% if encrypt_syslog == 'true' and transport == 'tcp' %}
