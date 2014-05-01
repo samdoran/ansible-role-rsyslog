@@ -1,6 +1,16 @@
 ---
-# Write description of local0, etc.
-# group needs to match an ansible group name
+# The facility determines the file name as well as format of the file on the
+# syslog collector. This in turn affects how the logs are ingested, parsed,
+# and tagged my logstash.
+#
+# local0 and local1 write out the raw data as shipped by rsyslog.
+# local2 will use rsyslog to wrap the messages in logstash firendly json.
+# local0 --> [tag]-YYYYMMDD.raw.log
+# local1 --> [tag]-YYYYMMDD.raw.json.log
+# local2 --> [tag]-YYYYMMDD.json.log
+#
+# imfile_groups.group needs to match an ansible group name
+
 imfile_groups:
   - group: redis
     logpath: /var/log/redis/redis.log
