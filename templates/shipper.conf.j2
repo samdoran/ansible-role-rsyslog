@@ -17,8 +17,8 @@ $ActionQueueSaveOnShutdown on   # save messages to disk on shutdown
 $ActionQueueType LinkedList     # run asynchronously
 $ActionResumeRetryCount -1      # infinite retries if host is down
 
-# Increase max message size to prevent truncating messages
-$MaxMessageSize 32k
+$MaxMessageSize 32k     # Increase max message size to prevent truncating messages
+$ModLoad imfile         # Load the imfile input module
 
 {% for item in imfile_groups %}
 {% if item.group in group_names %}
