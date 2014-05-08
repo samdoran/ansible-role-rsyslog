@@ -4,7 +4,7 @@
 # and tagged my logstash.
 #
 # local0 and local1 write out the raw data as shipped by rsyslog.
-# local2 will use rsyslog to wrap the messages in logstash firendly json.
+# local2 will use rsyslog to wrap the messages in logstash friendly json.
 # local0 --> [tag]-YYYYMMDD.raw.log
 # local1 --> [tag]-YYYYMMDD.raw.json.log
 # local2 --> [tag]-YYYYMMDD.json.log
@@ -39,5 +39,11 @@ imfile_groups:
   - group: backuppc
     logpath: /var/log/BackupPC/LOG
     tag: BackupPC
+    facility: local0
+    severity: info
+
+  - group: nessus
+    logpath: /opt/nessus/var/nessus/logs/nessusd.messages
+    tag: nessus
     facility: local0
     severity: info
