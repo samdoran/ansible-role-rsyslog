@@ -1,2 +1,5 @@
 ---
-# defaults file for foo
+# Syslog
+rsyslog_tcp_port: 514
+rsyslog_udp_port: 514
+rsyslog_tls_port: 6514
