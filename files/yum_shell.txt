@@ -1,0 +1,3 @@
+remove sysklogd
+install rsyslog
+run

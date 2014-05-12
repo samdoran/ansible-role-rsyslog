@@ -1,0 +1,21 @@
+---
+- name: Copy yum shell file
+  copy: src=yum_shell.txt dest=/tmp/yum_shell.txt owner=root group=root mode=0644
+
+- name: Remove sysklogd and install rsyslog
+  command: yum shell -y /tmp/yum_shell.txt
+
+- name: Remove yum shell file
+  file: path=/tmp/yum_shell.txt state=absent
+
+- name: Start and enable rsyslog
+  service: name=rsyslog state=started enabled=yes
+
+- name: Create /etc/rsyslog.d
+  file: path=/etc/rsyslog.d state=directory owner=root group=root mode=755
+
+- name: Set rsyslog options
+  lineinfile: dest=/etc/sysconfig/rsyslog regexp='^SYSLOGD_OPTIONS' line='SYSLOGD_OPTIONS="-c 3"'
+
+- name: Include /etc/rsyslog.d/*.conf
+  lineinfile: dest=/etc/rsyslog.conf insertafter='^#kern\.\*' line='\$IncludeConfig /etc/rsyslog.d/*.conf'
