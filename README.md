@@ -1,22 +1,27 @@
 Role Name
 ========
 
-A brief description of the role goes here.
+Configure rsyslog collector, relay, or host depending on `group_names`. The role will install rsyslog 7 on the collector.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+rsyslog >=5.8 on relay and client hosts
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+**rsyslog_tcp_port:**  TCP port for shipping unencrypted logs (default 514)
+**rsyslog_udp_port:**  UDP port for shipping unencrypted logs (default 514)
+**rsyslog_tls_port:**  TCP port for shipping encrypted logs (default 6514)
+**rsyslog_encrypt:**   Whethere or not to enable TLS encryption (default false)
+**rsyslog_protocol:**  Transport protocol, eithe TCP or UDP (default tcp)
+
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+rsyslog must be installed on the hosts
 
 Example Playbook
 -------------------------
@@ -25,14 +30,10 @@ Including an example of how to use your role (for instance, with variables passe
 
     - hosts: servers
       roles:
-         - { role: username.rolename, x: 42 }
+         - { role: syslog, rsyslog_encrypt: false, rsyslog_protocol: tcp }
 
 License
 -------
 
-BSD
+MIT
 
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
