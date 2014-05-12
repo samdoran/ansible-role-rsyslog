@@ -12,7 +12,7 @@
   tags: [ "config" , "syslog" ]
 
 - name: Install rsyslog v7 and other packages
-  yum: name={{ item }} state=latest
+  yum: name={{ item }} state=present
   with_items:
     - rsyslog-7*
     - cronie
