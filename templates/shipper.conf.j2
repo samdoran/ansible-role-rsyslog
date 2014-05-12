@@ -16,9 +16,10 @@ $ActionQueueMaxDiskSpace 1g     # 1gb space limit (use as much as possible)
 $ActionQueueSaveOnShutdown on   # save messages to disk on shutdown
 $ActionQueueType LinkedList     # run asynchronously
 $ActionResumeRetryCount -1      # infinite retries if host is down
+$ActionForwardDefaultTemplate RSYSLOG_ForwardFormat  # forward messages with precise timestamp and zone information
 
-$MaxMessageSize 32k     # Increase max message size to prevent truncating messages
-$ModLoad imfile         # Load the imfile input module
+$MaxMessageSize 32k             # Increase max message size to prevent truncating messages
+$ModLoad imfile                 # Load the imfile input module
 
 {% for item in imfile_groups %}
 {% if item.group in group_names %}

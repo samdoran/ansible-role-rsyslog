@@ -2,6 +2,9 @@
 # 64k is recommended for receiving Windows Event Logs
 $MaxMessageSize 64k
 
+# forward messages with precise timestamp and zone information
+$ActionForwardDefaultTemplate RSYSLOG_ForwardFormat
+
 # --- Open TCP and UDP Ports --- #
 
 # UDP syslog reception
