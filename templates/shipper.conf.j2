@@ -1,5 +1,5 @@
 # TCP {{ rsyslog_tcp_port }} and UDP {{ rsyslog_udp_port }} for unecrypted traffic
-{% if encrypt_syslog == 'true' and transport == 'tcp' %}
+{% if rsyslog_encrypt == 'true' and rsyslog_protocol == 'tcp' %}
 # Server uses TCP {{ rsyslog_tls_port }} for encrytped traffic,
 $DefaultNetstreamDriverCAFile /etc/pki/rsyslog/rsyslog-ca.pem
 $DefaultNetstreamDriver gtls            # use gtls netstream driver
@@ -30,11 +30,11 @@ $InputFileFacility {{ item.facility }}
 $InputFileSeverity {{ item.severity }}
 $InputRunFileMonitor
 
-{% if encrypt_syslog == 'true' and transport == 'tcp' %}
+{% if rsyslog_encrypt == 'true' and rsyslog_protocol == 'tcp' %}
 local0.* @@{{ rsyslog_collector }}:{{ rsyslog_tls_port }}       # Send everything via TCP {{ rsyslog_tls_port }}
-{% elif transport == 'tcp' %}
+{% elif rsyslog_protocol == 'tcp' %}
 local0.* @@{{ rsyslog_collector }}:{{ rsyslog_tcp_port }}       # Send everything via TCP {{ rsyslog_tcp_port }}
-{% elif transport == 'udp' %}
+{% elif rsyslog_protocol == 'udp' %}
 local0.* @{{ rsyslog_collector }}:{{ rsyslog_udp_port }}       # Send everything via UDP {{ rsyslog_udp_port }}
 {% endif %}
 & ~
@@ -42,10 +42,10 @@ local0.* @{{ rsyslog_collector }}:{{ rsyslog_udp_port }}       # Send everything
 {% endfor %}
 
 # Ship all syslogs to {{ rsyslog_collector }}
-{% if encrypt_syslog == 'true' and transport == 'tcp' %}
+{% if rsyslog_encrypt == 'true' and rsyslog_protocol == 'tcp' %}
 *.* @@{{ rsyslog_collector }}:{{ rsyslog_tls_port }}       # Send everything via TCP {{ rsyslog_tls_port }}
-{% elif transport == 'tcp' %}
+{% elif rsyslog_protocol == 'tcp' %}
 *.* @@{{ rsyslog_collector }}:{{ rsyslog_tcp_port }}       # Send everything via TCP {{ rsyslog_tcp_port }}
-{% elif transport == 'udp' %}
+{% elif rsyslog_protocol == 'udp' %}
 *.* @{{ rsyslog_collector }}:{{ rsyslog_udp_port }}       # Send everything via UDP {{ rsyslog_udp_port }}
 {% endif %}
