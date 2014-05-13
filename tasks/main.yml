@@ -1,4 +1,8 @@
 ---
+- {include: collector.yml, when: '"syslog_collector" in group_names'}
+- {include: relay.yml, when: '"syslog_relay" in group_names'}
+- {include: convert-sysklog.yml, when: 'ansible_os_family == "RedHat" and ansible_distribution_version|int >= 5 and ansible_distribution_version|int < 6'}
+
 - name: Install packages for TLS encryption
   yum: name={{ item }} state=present
   with_items:
@@ -6,9 +10,9 @@
     - rsyslog-gnutls
   tags: [ "syslog" , "yum" ]
 
-- {include: collector.yml, when: '"syslog_collector" in group_names'}
-- {include: relay.yml, when: '"syslog_relay" in group_names'}
-- {include: convert-sysklog.yml, when: 'ansible_os_family == "RedHat" and ansible_distribution_version|int >= 5 and ansible_distribution_version|int < 6'}
+- name: add entry to hosts file
+  lineinfile: dest=/etc/hosts line='{{ ansible_default_ipv4.address }}    {{ ansible_fqdn }} {{ ansible_hostname }}'
+  tags: [ "syslog" , "config" ]
 
 - name: Copy main rsyslog shipper config
   template: src=shipper.conf.j2 dest=/etc/rsyslog.d/shipper.conf owner=root group=root mode=0644

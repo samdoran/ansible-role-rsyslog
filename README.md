@@ -6,7 +6,7 @@ Configure rsyslog collector, relay, or host depending on `group_names`. The role
 Requirements
 ------------
 
-rsyslog >=5.8 on relay and client hosts
+rsyslog >=5.10 on relay and client hosts
 
 Role Variables
 --------------
