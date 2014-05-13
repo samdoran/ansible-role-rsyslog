@@ -1,4 +1,19 @@
 ---
+- name: register output of hostname -f
+  command: hostname -f
+  register: hostname_check
+  tags: syslog
+
+- name: check for valid fqdn
+  fail: msg='Hostname does not match ansible_fqdn'
+  when: hostname_check.stdout != ansible_fqdn
+  tags: syslog
+
+- name: check for localhost in fqdn
+  fail: msg='localhost in hostname'
+  when: "'localhost' in hostname_check.stdout or 'localhost' in ansible_fqdn"
+  tags: syslog
+
 - {include: collector.yml, when: '"syslog_collector" in group_names'}
 - {include: relay.yml, when: '"syslog_relay" in group_names'}
 - {include: convert-sysklog.yml, when: 'ansible_os_family == "RedHat" and ansible_distribution_version|int >= 5 and ansible_distribution_version|int < 6'}
@@ -8,14 +23,10 @@
   with_items:
     - gnutls-utils
     - rsyslog-gnutls
-  tags: [ "syslog" , "yum" ]
-
-- name: add entry to hosts file
-  lineinfile: dest=/etc/hosts line='{{ ansible_default_ipv4.address }}    {{ ansible_fqdn }} {{ ansible_hostname }}'
-  tags: [ "syslog" , "config" ]
+  tags: syslog
 
 - name: Copy main rsyslog shipper config
   template: src=shipper.conf.j2 dest=/etc/rsyslog.d/shipper.conf owner=root group=root mode=0644
   notify: restart rsyslog
   when: '"syslog_collector" not in group_names and "syslog_relay" not in group_names'
-  tags: [ "syslog" , "config" , "slcc" ]
+  tags: [ "syslog" , "slcc" ]
