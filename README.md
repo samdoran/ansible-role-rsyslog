@@ -21,11 +21,13 @@ Role Variables
 
 **rsyslog_protocol:**  Transport protocol, eithe TCP or UDP (default tcp)
 
+**rsyslog_collector:** Where logs will be shipped
+
 
 Dependencies
 ------------
 
-rsyslog must be installed on the hosts
+rsyslog must be available in a repository
 
 Example Playbook
 -------------------------
