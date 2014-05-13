@@ -21,10 +21,15 @@
 - name: install rsyslog packages
   yum: name={{ item }} state=present
   with_items:
-    - rsyslog
+    - rsyslog-5.10*
     - gnutls-utils
     - rsyslog-gnutls
   tags: syslog
+
+- name: preserve fqdn when shipping logs
+  lineinfile: "state=present dest=/etc/rsyslog.conf insertafter='^#### GLOBAL DIRECTIVES' line='$PreserveFQDN on'"
+  notify: restart rsyslog
+  tags: test
 
 - name: copy main rsyslog shipper config
   template: src=shipper.conf.j2 dest=/etc/rsyslog.d/shipper.conf owner=root group=root mode=0644
