@@ -22,7 +22,7 @@ $MaxMessageSize 32k             # Increase max message size to prevent truncatin
 $ModLoad imfile                 # Load the imfile input module
 
 {% for item in imfile_groups %}
-{% if item.group in group_names %}
+{% if item.group in groups and inventory_hostname in groups[ item.group ] %}
 # --- Capture {{ item.group }} logs --- #
 $InputFileName {{ item.logpath }}
 $InputFileTag {{ item.tag }}:
