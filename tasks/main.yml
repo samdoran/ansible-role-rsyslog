@@ -17,7 +17,6 @@
 
 - {include: collector.yml, when: '"syslog_collector" in group_names'}
 - {include: relay.yml, when: '"syslog_relay" in group_names'}
-- {include: convert-sysklog.yml, when: 'ansible_os_family == "RedHat" and ansible_distribution_version|int >= 5 and ansible_distribution_version|int < 6'}
 
 - name: install rsyslog packages
   yum: name={{ item }} state=present
@@ -36,12 +35,6 @@
   stat: path={{ item.logpath }} get_md5=no
   register: logcheck
   with_items: imfile_groups
-  tags: syslog
-
-- name: Add to the appropriate imfile_groups based on the existence of the monitored file
-  add_host: name={{ inventory_hostname }}  groups={{ item.item.group }}
-  when: item.stat.exists == true
-  with_items: logcheck.results
   tags: syslog
 
 - name: copy main rsyslog shipper config
