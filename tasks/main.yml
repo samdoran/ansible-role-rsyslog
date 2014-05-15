@@ -1,8 +1,12 @@
 ---
 - name: register output of hostname -f
-  shell: hostname -f; echo "import socket; print socket.getfqdn();"| python
+  command: hostname -f
   register: hostname_check
-  tags: test
+  tags: syslog
+
+- shell: hostname -f; echo "import socket; print socket.getfqdn();"| python
+  when: hostname_check.stdout != ansible_fqdn
+  tags: syslog
 
 - name: check for valid fqdn
   fail: msg='Hostname does not match ansible_fqdn'
@@ -29,7 +33,7 @@
 - name: preserve fqdn when shipping logs
   lineinfile: "state=present dest=/etc/rsyslog.conf insertafter='^#### GLOBAL DIRECTIVES' line='$PreserveFQDN on'"
   notify: restart rsyslog
-  tags: test
+  tags: syslog
 
 - name: copy main rsyslog shipper config
   template: src=shipper.conf.j2 dest=/etc/rsyslog.d/shipper.conf owner=root group=root mode=0644
