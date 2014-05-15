@@ -4,10 +4,6 @@
   register: hostname_check
   tags: syslog
 
-- shell: hostname -f; echo "import socket; print socket.getfqdn();"| python
-  when: hostname_check.stdout != ansible_fqdn
-  tags: syslog
-
 - name: check for valid fqdn
   fail: msg='Hostname does not match ansible_fqdn'
   when: hostname_check.stdout != ansible_fqdn
