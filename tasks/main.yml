@@ -1,8 +1,8 @@
 ---
 - name: register output of hostname -f
-  command: hostname -f
+  shell: hostname -f; echo "import socket; print socket.getfqdn();"| python
   register: hostname_check
-  tags: syslog
+  tags: test
 
 - name: check for valid fqdn
   fail: msg='Hostname does not match ansible_fqdn'
