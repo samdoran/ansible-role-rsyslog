@@ -47,3 +47,15 @@ imfile_groups:
     tag: nessus
     facility: local0
     severity: info
+
+  - group: apache
+    logpath: /var/log/httpd/access_log
+    tag: apache-access
+    facility: local0
+    severity: info
+
+  - group: apache
+    logpath: /var/log/httpd/error_log
+    tag: apache-access
+    facility: local0
+    severity: info
