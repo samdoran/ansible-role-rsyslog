@@ -31,6 +31,18 @@
   notify: restart rsyslog
   tags: syslog
 
+- name: Check imfile_groups.logpath for logs to monitor
+  stat: path={{ item.logpath }} get_md5=no
+  register: logcheck
+  with_items: imfile_groups
+  tags: syslog
+
+- name: Add to the appropriate imfile_groups based on the existence of the monitored file
+  add_host: name={{ inventory_hostname} } groups={{ item.item.group }}
+  when: item.stat.exists == true
+  with_items: logcheck.results
+  tags: syslog
+
 - name: copy main rsyslog shipper config
   template: src=shipper.conf.j2 dest=/etc/rsyslog.d/shipper.conf owner=root group=root mode=0644
   notify: restart rsyslog
