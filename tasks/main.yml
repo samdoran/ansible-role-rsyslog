@@ -3,6 +3,7 @@
   command: hostname -f
   register: hostname_check
   tags: syslog
+  changed_when: false
 
 - name: check for valid fqdn
   fail: msg='Hostname does not match ansible_fqdn'
@@ -38,7 +39,7 @@
   tags: syslog
 
 - name: Add to the appropriate imfile_groups based on the existence of the monitored file
-  add_host: name={{ inventory_hostname} } groups={{ item.item.group }}
+  add_host: name={{ inventory_hostname }}  groups={{ item.item.group }}
   when: item.stat.exists == true
   with_items: logcheck.results
   tags: syslog
