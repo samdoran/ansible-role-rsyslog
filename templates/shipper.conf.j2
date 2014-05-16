@@ -21,14 +21,14 @@ $ActionForwardDefaultTemplate RSYSLOG_ForwardFormat  # forward messages with pre
 $MaxMessageSize 32k             # Increase max message size to prevent truncating messages
 $ModLoad imfile                 # Load the imfile input module
 
-{% for item in imfile_groups %}
-{% if item.group in groups and inventory_hostname in groups[ item.group ] %}
-# --- Capture {{ item.group }} logs --- #
-$InputFileName {{ item.logpath }}
-$InputFileTag {{ item.tag }}:
-$InputFileStateFile {{ item.tag }}-state
-$InputFileFacility {{ item.facility }}
-$InputFileSeverity {{ item.severity }}
+{% for item in logcheck.results %}
+{% if item.stat.exists %}
+# --- Capture {{ item.item.group }} logs --- #
+$InputFileName {{ item.item.logpath }}
+$InputFileTag {{ item.item.tag }}:
+$InputFileStateFile {{ item.item.tag }}-state
+$InputFileFacility {{ item.item.facility }}
+$InputFileSeverity {{ item.item.severity }}
 $InputRunFileMonitor
 
 {% if rsyslog_encrypt == 'true' and rsyslog_protocol == 'tcp' %}
