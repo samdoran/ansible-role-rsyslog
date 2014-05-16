@@ -26,6 +26,10 @@
     - rsyslog-gnutls
   tags: syslog
 
+- name: create /var/lib/rsyslog
+  file: path=/var/lib/rsyslog state=directory owner=root group=root mode=700
+  tags: syslog
+
 - name: preserve fqdn when shipping logs
   lineinfile: "state=present dest=/etc/rsyslog.conf insertafter='^#### GLOBAL DIRECTIVES' line='$PreserveFQDN on'"
   notify: restart rsyslog
