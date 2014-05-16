@@ -30,3 +30,12 @@
             mode=0644
   tags: [ "config" , "syslog" ]
   notify: restart rsyslog
+
+- name: setup cron job to compress old remote logs
+  cron: name="compress old remote logs"
+        state=present
+        user=root
+        hour=01
+        minute=17
+        job="find /var/log/remote -type f -name "*.log" -mtime +3 | xargs gzip"
+  tags: [ "cron" , "syslog" ]
