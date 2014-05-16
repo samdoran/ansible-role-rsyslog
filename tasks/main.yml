@@ -4,6 +4,7 @@
   register: hostname_check
   tags: syslog
   changed_when: false
+  always_run: true
 
 - name: check for valid fqdn
   fail: msg='Hostname does not match ansible_fqdn'
