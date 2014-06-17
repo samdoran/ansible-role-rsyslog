@@ -122,7 +122,7 @@ if $syslogfacility-text == 'local2' then {
 
 # Store logs that are not from this host and did not match the above rules in
 # /var/log/remote/[host]/[program]/[program]-YYYYMMDD.syslog.json.log
-if $hostname != '{{ ansible_hostname }}' then {
+if $hostname != '{{ ansible_fqdn }}' then {
     action(type="omfile"
         DynaFile="syslog_name_json"
         DirCreateMode="0750"
