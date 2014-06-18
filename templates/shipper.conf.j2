@@ -39,10 +39,10 @@ local0.* @@{{ rsyslog_collector }}:{{ rsyslog_tcp_port }}       # Send everythin
 local0.* @{{ rsyslog_collector }}:{{ rsyslog_udp_port }}       # Send everything via UDP {{ rsyslog_udp_port }}
 {% endif %}
 & ~
+
 {% endif %}
 {% endfor %}
-
-# Ship all syslogs to {{ rsyslog_collector }}
+# --- Ship all syslogs to {{ rsyslog_collector }} --- #
 {% if rsyslog_encrypt == 'true' and rsyslog_protocol == 'tcp' %}
 *.* @@{{ rsyslog_collector }}:{{ rsyslog_tls_port }}       # Send everything via TCP {{ rsyslog_tls_port }}
 {% elif rsyslog_protocol == 'tcp' %}
