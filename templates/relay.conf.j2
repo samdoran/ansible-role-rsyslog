@@ -18,7 +18,7 @@ input(type="imptcp" port="{{ rsyslog_tcp_port }}")
 # --- Forward to rsyslog collector --- #
 # After shipping logs not from this host, stop processing them so they don't
 # clog the local log files
-if $hostname != '{{ ansible_hostname }}' then {
+if $hostname != '{{ ansible_fqdn }}' then {
     {% if rsyslog_encrypt == 'true' and rsyslog_protocol == 'tcp' %}
     action(type="omfwd" target="{{ rsyslog_collector }}" protocol="{{ rsyslog_protocol }}" port="{{ rsyslog_tls_port }}")
     {% elif rsyslog_protocol == 'tcp' %}
