@@ -59,3 +59,15 @@ imfile_groups:
     tag: apache-error
     facility: local0
     severity: info
+  
+  - group: mongod
+    logpath: /var/log/mongo/mongod.log
+    tag: mongod
+    facility: local0
+    severity: info
+  
+  - group: mongos
+    logpath: /var/log/mongo/mongos.log
+    tag: mongos
+    facility: local0
+    severity: info
