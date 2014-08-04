@@ -56,6 +56,6 @@ imfile_groups:
 
   - group: apache
     logpath: /var/log/httpd/error_log
-    tag: apache-access
+    tag: apache-error
     facility: local0
     severity: info
