@@ -36,6 +36,15 @@
         state=present
         user=root
         hour=01
-        minute=17
+        minute=10
         job="find /var/log/remote -type f -name \"*.log\" -mtime +7 | xargs gzip"
+  tags: [ "cron" , "syslog" ]
+
+- name: setup cron job to delete old remote logs
+  cron: name="delete old compressed logs"
+        state=present
+        user=root
+        hour=02
+        minute=10
+        job="find /var/log/remote -type f -name \"*.log.gz\" -mtime +180 | xargs rm"
   tags: [ "cron" , "syslog" ]
