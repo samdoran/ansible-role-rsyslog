@@ -28,26 +28,45 @@
   tags: syslog
 
 - name: create /var/lib/rsyslog
-  file: path=/var/lib/rsyslog state=directory owner=root group=root mode=700
+  file:
+    path=/var/lib/rsyslog
+    state=directory
+    owner=root
+    group=root
+    mode=700
   tags: syslog
 
 - name: preserve fqdn when shipping logs
-  lineinfile: "state=present dest=/etc/rsyslog.conf insertafter='^#### GLOBAL DIRECTIVES' line='$PreserveFQDN on'"
+  lineinfile: >
+    state=present
+    dest=/etc/rsyslog.conf
+    insertafter='^#### GLOBAL DIRECTIVES'
+    line='$PreserveFQDN on'
   notify: restart rsyslog
   tags: syslog
 
 - name: Check imfile_groups.logpath for logs to monitor
-  stat: path={{ item.logpath }} get_md5=no
+  stat:
+    path={{ item.logpath }}
+    get_md5=no
   register: logcheck
   with_items: imfile_groups
   tags: syslog
 
 - name: copy main rsyslog shipper config
-  template: src=shipper.conf.j2 dest=/etc/rsyslog.d/shipper.conf owner=root group=root mode=0644
+  template:
+    src=shipper.conf.j2
+    dest=/etc/rsyslog.d/shipper.conf
+    owner=root
+    group=root
+    mode=0644
   notify: restart rsyslog
   when: '"syslog_collector" not in group_names and "syslog_relay" not in group_names'
   tags: [ "syslog" , "slcc" ]
 
 - name: start and enable rsyslog
-  service: name=rsyslog enabled=yes state=started
+  service:
+    name=rsyslog
+    enabled=yes
+    state=started
   tags: syslog

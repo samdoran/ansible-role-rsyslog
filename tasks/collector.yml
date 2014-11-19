@@ -4,11 +4,12 @@
   tags: [ "syslog" , "yum" , "packages" ]
 
 - name: install rsysog repo
-  copy: src=rsyslogall.repo
-        dest=/etc/yum.repos.d/rsyslogall.repo
-        owner=root
-        group=root
-        mode=0644
+  copy:
+    src=rsyslogall.repo
+    dest=/etc/yum.repos.d/rsyslogall.repo
+    owner=root
+    group=root
+    mode=0644
   tags: [ "config" , "syslog" ]
 
 - name: install rsyslog v7 and other packages
@@ -23,19 +24,41 @@
   tags: [ "syslog" , "yum" , "packages" ]
 
 - name: copy main rsylog collector config
-  template: src=main_logger.conf.j2
-            dest=/etc/rsyslog.d/main_logger.conf
-            owner=root
-            group=root
-            mode=0644
-  tags: [ "config" , "syslog" ]
+  template:
+    src=main_logger.conf.j2
+    dest=/etc/rsyslog.d/main_logger.conf
+    owner=root
+    group=root
+    mode=0644
+tags: [ "config" , "syslog" ]
   notify: restart rsyslog
 
+- name: setup cron job to delete old postfix logs from MTAs
+  cron:
+    name="delete old postfix logs from MTAs"
+    state=absent
+    user=root
+    hour=12
+    minute=05
+    job='find /var/log/remote/mta* \( -name "postfix*.log*" -or -name "dkim*.log*" \) -and -mtime +3 | xargs rm'
+  tags: [ "cron" , "syslog" ]
+
 - name: setup cron job to compress old remote logs
-  cron: name="compress old remote logs"
-        state=present
-        user=root
-        hour=01
-        minute=17
-        job="find /var/log/remote -type f -name \"*.log\" -mtime +7 | xargs gzip"
+  cron:
+    name="compress old remote logs"
+    state=present
+    user=root
+    hour=01
+    minute=30
+    job="find /var/log/remote -type f -name \"*.log\" -mtime +7 | xargs gzip"
+  tags: [ "cron" , "syslog" ]
+
+- name: setup cron job to delete old remote logs
+  cron:
+    name="delete old compressed logs"
+    state=present
+    user=root
+    hour=02
+    minute=10
+    job="find /var/log/remote -type f -name \"*.log.gz\" -mtime +180 | xargs rm"
   tags: [ "cron" , "syslog" ]
