@@ -67,7 +67,7 @@ imfile_groups:
     severity: info
 
   - group: samba
-    logpath: /var/log/samba.log
-    tag: samba
+    logpath: /var/log/samba/smbd.log
+    tag: smbd
     facility: local0
     severity: info
