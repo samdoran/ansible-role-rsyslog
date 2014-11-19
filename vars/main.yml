@@ -42,12 +42,6 @@ imfile_groups:
     facility: local0
     severity: info
 
-  - group: nessus
-    logpath: /opt/nessus/var/nessus/logs/nessusd.messages
-    tag: nessus
-    facility: local0
-    severity: info
-
   - group: apache
     logpath: /var/log/httpd/access_log
     tag: apache-access
@@ -59,15 +53,21 @@ imfile_groups:
     tag: apache-error
     facility: local0
     severity: info
-  
+
   - group: mongod
     logpath: /var/log/mongo/mongod.log
     tag: mongod
     facility: local0
     severity: info
-  
+
   - group: mongos
     logpath: /var/log/mongo/mongos.log
     tag: mongos
+    facility: local0
+    severity: info
+
+  - group: samba
+    logpath: /var/log/samba.log
+    tag: samba
     facility: local0
     severity: info
