@@ -3,7 +3,7 @@
 rsyslog_tcp_port: 514
 rsyslog_udp_port: 514
 rsyslog_tls_port: 6514
-rsyslog_collector: spoonbill32.royall.com
+rsyslog_collector: 192.168.80.17
 
 rsyslog_encrypt: false
 rsyslog_protocol: tcp
