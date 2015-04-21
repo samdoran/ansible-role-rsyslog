@@ -43,6 +43,15 @@ template(name="syslog_name_json" type="string"
     string="/var/log/remote/%HOSTNAME%/%programname:R,ERE,1,FIELD:([^(]*)--end%/%programname:R,ERE,1,FIELD:([^(]*)--end%-%$YEAR%%$MONTH%%$DAY%.syslog.json.log"
 )
 
+# local 3
+# Store files in /var/log/remote/[hostname]/[hostname]-YYYYMMDD.cisco.json.log
+# One log file per host per day
+# Cisco uses a non-standard syslog format, so it's easier to just dump it all
+# to a file and parse it with Logstash
+template(name="cisco_name_json" type="string"
+    string="/var/log/remote/%HOSTNAME%/%HOSTNAME%-%$YEAR%%$MONTH%%$DAY%.cisco.json.log"
+)
+
 
 
 # --- Log format templates --- #
@@ -63,6 +72,12 @@ template(name="TraditionalFormatWithPRI" type="string"
 # Store log files in JSON
 template(name="SyslogJSONFormat" type="string"
     string="{%timestamp:::date-rfc3339,jsonf:@timestamp%,%source:::jsonf:source_host%,\"source_ip\":\"%fromhost-ip:::json%\",\"message\":\"%timestamp% %syslogtag%%msg:::json%\",%programname:::jsonf:program%,%syslogfacility-text:::jsonf:facility%,%syslogseverity-text:::jsonf:severity%,%procid:::jsonf:processid%}\n"
+)
+
+# local 3
+# Store Cisco log files in JSON
+template(name="CiscoJSONFormat" type="string"
+    string="{%timestamp:::date-rfc3339,jsonf:@timestamp%,%source:::jsonf:source_host%,\"source_ip\":\"%fromhost-ip:::json%\",%msg:::json:message%,%programname:::jsonf:program%,%syslogfacility-text:::jsonf:facility%,%syslogseverity-text:::jsonf:severity%}\n"
 )
 {% endraw %}
 
@@ -120,9 +135,25 @@ if $syslogfacility-text == 'local2' then {
     stop
 }
 
+# Wrap Cisco logs in JSON
+# Saved as /var/log/remote/[host]/[host]-YYYYMMDD.cisco.json.log
+if $syslogfacility-text == 'local3' then {
+    action(type="omfile"
+        DynaFile="cisco_name_json"
+        DirCreateMode="0750"
+        FileCreateMode="0640"
+        DirOwner="root"
+        DirGroup="logreader"
+        FileOwner="root"
+        FileGroup="logreader"
+        Template="CiscoJSONFormat"
+    )
+    stop
+}
+
 # Store logs that are not from this host and did not match the above rules in
 # /var/log/remote/[host]/[program]/[program]-YYYYMMDD.syslog.json.log
-if $hostname != '{{ ansible_fqdn }}' then {
+if $hostname != 'syslog-01.infosec.royall.com' then {
     action(type="omfile"
         DynaFile="syslog_name_json"
         DirCreateMode="0750"

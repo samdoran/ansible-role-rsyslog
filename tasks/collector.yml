@@ -30,7 +30,7 @@
     owner: root
     group: root
     mode: 0644
-  tags: [ "config" , "syslog" ]
+  tags: [ "config" , "syslog" , "mainconf" ]
   notify: restart rsyslog
 
 - name: Setup cron job to delete old postfix logs from MTAs
