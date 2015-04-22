@@ -8,6 +8,17 @@ $MaxMessageSize 64k
 
 # --- Open TCP and UDP Ports --- #
 
+{% if rsyslog_encrypt %}
+# Encrypted TCP syslog reception using TLS
+$DefaultNetstreamDriver gtls
+$DefaultNetstreamDriverCAFile   {{ rsyslog_ssl_ca_path }}/{{ rsyslog_ssl_ca_filename }}
+$DefaultNetstreamDriverCertFile {{ rsyslog_ssl_crt_path }}/{{ rsyslog_ssl_filename }}.crt
+$DefaultNetstreamDriverKeyFile  {{ rsyslog_ssl_key_path }}/{{ rsyslog_ssl_filename }}.key
+
+module(load="imtcp" StreamDriver.Mode="1" StreamDriver.AuthMode="anon")
+input(type="imtcp" port="{{ rsyslog_tls_port }}")
+{% endif %}
+
 # UDP syslog reception
 module(load="imudp")
 input(type="imudp" port="{{ rsyslog_udp_port }}")
@@ -15,7 +26,6 @@ input(type="imudp" port="{{ rsyslog_udp_port }}")
 # Unencrypted TCP syslog reception
 module(load="imptcp")
 input(type="imptcp" port="{{ rsyslog_tcp_port }}")
-
 
 
 {% raw %}
@@ -71,13 +81,13 @@ template(name="TraditionalFormatWithPRI" type="string"
 # local 2
 # Store log files in JSON
 template(name="SyslogJSONFormat" type="string"
-    string="{%timestamp:::date-rfc3339,jsonf:@timestamp%,%source:::jsonf:source_host%,\"source_ip\":\"%fromhost-ip:::json%\",\"message\":\"%timestamp% %syslogtag%%msg:::json%\",%programname:::jsonf:program%,%syslogfacility-text:::jsonf:facility%,%syslogseverity-text:::jsonf:severity%,%procid:::jsonf:processid%}\n"
+    string="{%timestamp:::date-rfc3339,jsonf:@timestamp%,%HOSTNAME:::jsonf:fqdn%,\"source_ip\":\"%fromhost-ip:::json%\",\"message\":\"%timestamp% %syslogtag%%msg:::json%\",%programname:::jsonf:program%,%syslogfacility-text:::jsonf:facility%,%syslogseverity-text:::jsonf:severity%,%procid:::jsonf:processid%}\n"
 )
 
 # local 3
 # Store Cisco log files in JSON
 template(name="CiscoJSONFormat" type="string"
-    string="{%timestamp:::date-rfc3339,jsonf:@timestamp%,%source:::jsonf:source_host%,\"source_ip\":\"%fromhost-ip:::json%\",%msg:::jsonf:message%,%programname:::jsonf:program%,%syslogfacility-text:::jsonf:facility%,%syslogseverity-text:::jsonf:severity%}\n"
+    string="{%timestamp:::date-rfc3339,jsonf:@timestamp%,%HOSTNAME:::jsonf:fqdn%,\"source_ip\":\"%fromhost-ip:::json%\",%msg:::jsonf:message%,%programname:::jsonf:program%,%syslogfacility-text:::jsonf:facility%,%syslogseverity-text:::jsonf:severity%}\n"
 )
 {% endraw %}
 
