@@ -1,7 +1,7 @@
 # TCP {{ rsyslog_tcp_port }} and UDP {{ rsyslog_udp_port }} for unecrypted traffic
-{% if rsyslog_encrypt == 'true' and rsyslog_protocol == 'tcp' %}
+{% if rsyslog_encrypt and rsyslog_protocol == 'tcp' %}
 # Server uses TCP {{ rsyslog_tls_port }} for encrytped traffic,
-$DefaultNetstreamDriverCAFile /etc/pki/rsyslog/rsyslog-ca.pem
+$DefaultNetstreamDriverCAFile {{ rsyslog_ssl_ca_path }}/{{ rsyslog_ssl_ca_filename }}
 $DefaultNetstreamDriver gtls            # use gtls netstream driver
 $ActionSendStreamDriverMode 1           # require TLS for the connection
 $ActionSendStreamDriverAuthMode anon    # server is NOT authenticated
@@ -31,7 +31,7 @@ $InputFileFacility {{ item.item.facility }}
 $InputFileSeverity {{ item.item.severity }}
 $InputRunFileMonitor
 
-{% if rsyslog_encrypt == 'true' and rsyslog_protocol == 'tcp' %}
+{% if rsyslog_encrypt %}
 local0.* @@{{ rsyslog_collector }}:{{ rsyslog_tls_port }}       # Send everything via TCP {{ rsyslog_tls_port }}
 {% elif rsyslog_protocol == 'tcp' %}
 local0.* @@{{ rsyslog_collector }}:{{ rsyslog_tcp_port }}       # Send everything via TCP {{ rsyslog_tcp_port }}
@@ -43,7 +43,7 @@ local0.* @{{ rsyslog_collector }}:{{ rsyslog_udp_port }}       # Send everything
 {% endif %}
 {% endfor %}
 # --- Ship all syslogs to {{ rsyslog_collector }} --- #
-{% if rsyslog_encrypt == 'true' and rsyslog_protocol == 'tcp' %}
+{% if rsyslog_encrypt %}
 *.* @@{{ rsyslog_collector }}:{{ rsyslog_tls_port }}       # Send everything via TCP {{ rsyslog_tls_port }}
 {% elif rsyslog_protocol == 'tcp' %}
 *.* @@{{ rsyslog_collector }}:{{ rsyslog_tcp_port }}       # Send everything via TCP {{ rsyslog_tcp_port }}
