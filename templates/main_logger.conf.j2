@@ -77,7 +77,7 @@ template(name="SyslogJSONFormat" type="string"
 # local 3
 # Store Cisco log files in JSON
 template(name="CiscoJSONFormat" type="string"
-    string="{%timestamp:::date-rfc3339,jsonf:@timestamp%,%source:::jsonf:source_host%,\"source_ip\":\"%fromhost-ip:::json%\",%msg:::json:message%,%programname:::jsonf:program%,%syslogfacility-text:::jsonf:facility%,%syslogseverity-text:::jsonf:severity%}\n"
+    string="{%timestamp:::date-rfc3339,jsonf:@timestamp%,%source:::jsonf:source_host%,\"source_ip\":\"%fromhost-ip:::json%\",%msg:::jsonf:message%,%programname:::jsonf:program%,%syslogfacility-text:::jsonf:facility%,%syslogseverity-text:::jsonf:severity%}\n"
 )
 {% endraw %}
 
