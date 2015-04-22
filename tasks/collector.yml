@@ -30,8 +30,28 @@
     owner: root
     group: root
     mode: 0644
-  tags: [ "config" , "syslog" , "mainconf" ]
+  tags: [ "config" , "syslog" , "mainconf" , "syslogssl" ]
   notify: restart rsyslog
+
+- name: Copy SSL cert
+  template:
+    src: rsyslog_ssl_crt.j2
+    dest: "{{ rsyslog_ssl_crt_path }}/{{ rsyslog_ssl_filename }}.crt"
+    owner: root
+    group: root
+    mode: 0644
+  when: rsyslog_encrypt
+  tags: [ "config" , "syslog" , "syslogssl" ]
+
+- name: Copy SSL key
+  template:
+    src: rsyslog_ssl_key.j2
+    dest: "{{ rsyslog_ssl_key_path }}/{{ rsyslog_ssl_filename }}.key"
+    owner: root
+    group: root
+    mode: 0400
+  when: rsyslog_encrypt
+  tags: [ "config" , "syslog" , "syslogssl" ]
 
 - name: Setup cron job to delete old postfix logs from MTAs
   cron:
