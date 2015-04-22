@@ -5,5 +5,13 @@ rsyslog_udp_port: 514
 rsyslog_tls_port: 6514
 rsyslog_collector: 192.168.80.17
 
-rsyslog_encrypt: false
 rsyslog_protocol: tcp
+
+# TLS settings
+rsyslog_encrypt: False
+rsyslog_ssl_ca_path: /etc/pki/tls/certs
+rsyslog_ssl_ca_filename: ca-bundle.crt
+
+rsyslog_ssl_crt_path: /etc/pki/tls/certs
+rsyslog_ssl_key_path: /etc/pki/tls/private
+rsyslog_ssl_filename: rsyslog
