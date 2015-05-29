@@ -1,28 +1,4 @@
 ---
-- name: Remove rsyslog v5
-  yum: name='rsyslog-5*' state=absent
-  tags: [ "syslog" , "yum" , "packages" ]
-
-- name: Install rsysog repo
-  copy:
-    src: rsyslogall.repo
-    dest: /etc/yum.repos.d/rsyslogall.repo
-    owner: root
-    group: root
-    mode: 0644
-  tags: [ "config" , "syslog" ]
-
-- name: Install rsyslog v7 and other packages
-  yum: name={{ item }} state=present
-  with_items:
-    - rsyslog-7*
-    - cronie
-    - cronie-anacron
-    - crontabs
-    - gnutls-utils
-    - rsyslog-gnutls
-  tags: [ "syslog" , "yum" , "packages" ]
-
 - name: Copy main rsylog collector config
   template:
     src: main_logger.conf.j2
