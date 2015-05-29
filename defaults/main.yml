@@ -4,6 +4,7 @@ rsyslog_tcp_port: 514
 rsyslog_udp_port: 514
 rsyslog_tls_port: 6514
 rsyslog_collector: 192.168.80.17
+rsyslog_relay_collector: 192.168.80.17
 
 rsyslog_protocol: tcp
 

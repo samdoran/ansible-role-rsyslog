@@ -20,21 +20,21 @@ input(type="imptcp" port="{{ rsyslog_tcp_port }}")
 # clog the local log files
 if $hostname != '{{ ansible_fqdn }}' then {
     {% if rsyslog_encrypt == 'true' and rsyslog_protocol == 'tcp' %}
-    action(type="omfwd" target="{{ rsyslog_collector }}" protocol="{{ rsyslog_protocol }}" port="{{ rsyslog_tls_port }}")
+    action(type="omfwd" target="{{ rsyslog_relay_collector }}" protocol="{{ rsyslog_protocol }}" port="{{ rsyslog_tls_port }}")
     {% elif rsyslog_protocol == 'tcp' %}
-    action(type="omfwd" target="{{ rsyslog_collector }}" protocol="{{ rsyslog_protocol }}" port="{{ rsyslog_tcp_port }}")
+    action(type="omfwd" target="{{ rsyslog_relay_collector }}" protocol="{{ rsyslog_protocol }}" port="{{ rsyslog_tcp_port }}")
     {% elif rsyslog_protocol == 'udp' %}
-    action(type="omfwd" target="{{ rsyslog_collector }}" protocol="{{ rsyslog_protocol }}" port="{{ rsyslog_udp_port }}")
+    action(type="omfwd" target="{{ rsyslog_relay_collector }}" protocol="{{ rsyslog_protocol }}" port="{{ rsyslog_udp_port }}")
     {% endif %}
     stop
 } else {
     # Ship logs from this host to the remote collector and continue
     # to process them so they show up normally
     {% if rsyslog_encrypt == 'true' and rsyslog_protocol == 'tcp' %}
-    action(type="omfwd" target="{{ rsyslog_collector }}" protocol="{{ rsyslog_protocol }}" port="{{ rsyslog_tls_port }}")
+    action(type="omfwd" target="{{ rsyslog_relay_collector }}" protocol="{{ rsyslog_protocol }}" port="{{ rsyslog_tls_port }}")
     {% elif rsyslog_protocol == 'tcp' %}
-    action(type="omfwd" target="{{ rsyslog_collector }}" protocol="{{ rsyslog_protocol }}" port="{{ rsyslog_tcp_port }}")
+    action(type="omfwd" target="{{ rsyslog_relay_collector }}" protocol="{{ rsyslog_protocol }}" port="{{ rsyslog_tcp_port }}")
     {% elif rsyslog_protocol == 'udp' %}
-    action(type="omfwd" target="{{ rsyslog_collector }}" protocol="{{ rsyslog_protocol }}" port="{{ rsyslog_udp_port }}")
+    action(type="omfwd" target="{{ rsyslog_relay_collector }}" protocol="{{ rsyslog_protocol }}" port="{{ rsyslog_udp_port }}")
     {% endif %}
 }
