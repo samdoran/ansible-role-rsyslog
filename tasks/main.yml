@@ -19,12 +19,18 @@
 - {include: collector.yml, when: '"syslog_collector" in group_names'}
 - {include: relay.yml, when: '"syslog_relay" in group_names'}
 
+# Define package lists which are different for major versions of Red Hat
+- include: setup-RedHat-5.yml
+  when: ansible_distribution_major_version | int == 5
+  tags: syslog
+
+- include: setup-RedHat-6.yml
+  when: ansible_distribution_major_version | int == 6
+  tags: syslog
+
 - name: Install rsyslog packages
   yum: name={{ item }} state=present
-  with_items:
-    - rsyslog-5.10*
-    - gnutls-utils
-    - rsyslog-gnutls
+  with_items: syslog_packages
   tags: syslog
 
 - name: Create /var/lib/rsyslog

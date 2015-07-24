@@ -1,0 +1,15 @@
+---
+- name: Remove rsyslog-3 and sysklogd (Red Hat 5)
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - rsyslog
+    - sysklogd
+
+- name: Define package list (Red Hat 5)
+  set_fact:
+    syslog_packages:
+      - rsyslog5
+      - rsyslog5-gnutls
+      - gnutls-utils
