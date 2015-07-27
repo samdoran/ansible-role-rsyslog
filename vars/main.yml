@@ -8,6 +8,7 @@
 # local0 --> [tag]-YYYYMMDD.raw.log
 # local1 --> [tag]-YYYYMMDD.raw.json.log
 # local2 --> [tag]-YYYYMMDD.json.log
+# local3 --> [hostname]-YYYYMMDD.cisco.json.log
 #
 # imfile_groups.group needs to match an ansible group name
 
