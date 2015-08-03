@@ -55,6 +55,24 @@ imfile_groups:
     facility: local0
     severity: info
 
+  - group: apache
+    logpath: /var/log/httpd/rewrite.log
+    tag: apache-rewrite
+    facility: local0
+    severity: info
+
+  - group: apache
+    logpath: /var/log/httpd/ssl_access_log
+    tag: apache-ssl-access
+    facility: local0
+    severity: info
+
+  - group: apache
+    logpath: /var/log/httpd/ssl_request_log
+    tag: apache-ssl-request
+    facility: local0
+    severity: info
+
   - group: mongod
     logpath: /var/log/mongo/mongod.log
     tag: mongod
