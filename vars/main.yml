@@ -90,3 +90,33 @@ imfile_groups:
     tag: smbd
     facility: local0
     severity: info
+
+  - group: scalr
+    logpath: /var/log/scalr/php-server_terminate
+    tag: scalr-php-server-terminate
+    facility: local0
+    severity: info
+
+  - group: scalr
+    logpath: /var/log/scalr/web.error
+    tag: scalr-web-error
+    facility: local0
+    severity: info
+
+  - group: scalr
+    logpath: /var/log/scalr/szrupdater
+    tag: scalr-szrupdater
+    facility: local0
+    severity: info
+
+  - group: scalr
+    logpath: /var/log/scalr/msgsender
+    tag: scalr-msgsender
+    facility: local0
+    severity: info
+
+  - group: scalr
+    logpath: /var/log/scalr/hp-scaling
+    tag: scalr-hp-scaling
+    facility: local0
+    severity: info
