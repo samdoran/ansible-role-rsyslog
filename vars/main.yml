@@ -19,12 +19,6 @@ imfile_groups:
     facility: local0
     severity: info
 
-  - group: ls_parser
-    logpath: /var/log/logstash/logstash.log
-    tag: logstash
-    facility: local0
-    severity: info
-
   - group: nginx
     logpath: /var/log/nginx/access.log
     tag: nginx-access
