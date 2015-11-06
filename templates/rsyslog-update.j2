@@ -1,0 +1,7 @@
+{% for package in syslog_packages_install %}
+install {{ package }}
+{% endfor %}
+{% for package in syslog_packages_remove %}
+remove {{ package }}
+{% endfor %}
+run

@@ -28,18 +28,32 @@
   when: ansible_distribution_major_version | int == 6
   tags: syslog
 
-- name: Install rsyslog packages
-  yum: name={{ item }} state=present
-  with_items: syslog_packages
+- name: Create yum shell script for updating rsyslog
+  template:
+    src: rsyslog-update.j2
+    dest: /tmp/rsyslog-update
+    owner: root
+    group: root
+    mode: 0644
   tags: syslog
 
-- name: Create /var/lib/rsyslog
+- name: Install new rsyslog packages
+  command: yum shell -y /tmp/rsyslog-update
+  tags: syslog
+
+- name: Remove yum shell script
   file:
-    path: /var/lib/rsyslog
+    path: /tmp/rsyslog-update
+    state: absent
+  tags: syslog
+
+- name: Create /var/log/buffer
+  file:
+    path: /var/log/buffer
     state: directory
     owner: root
     group: root
-    mode: 700
+    mode: 0755
   tags: syslog
 
 - name: Preserve fqdn when shipping logs

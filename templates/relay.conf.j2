@@ -2,6 +2,16 @@
 # 64k is recommended for receiving Windows Event Logs
 $MaxMessageSize 64k
 
+# An on-disk queue is created for this action. If the remote host is
+# down, messages are spooled to disk and sent when it is up again.
+
+$WorkDirectory /var/log/buffer  # where to place spool files
+$ActionQueueFileName fwdRule1   # unique name prefix for spool files
+$ActionQueueMaxDiskSpace 1g     # 1gb space limit (use as much as possible)
+$ActionQueueSaveOnShutdown on   # save messages to disk on shutdown
+$ActionQueueType LinkedList     # run asynchronously
+$ActionResumeRetryCount -1      # infinite retries if host is down
+
 # forward messages with precise timestamp and zone information
 $ActionForwardDefaultTemplate RSYSLOG_ForwardFormat
 
