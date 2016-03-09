@@ -70,7 +70,7 @@
     path: "{{ item.logpath }}"
     get_md5: no
   register: logcheck
-  with_items: imfile_groups
+  with_items: "{{ imfile_groups }}"
   tags: [ 'syslog' , 'syslogconfig']
 
 - name: Copy main rsyslog shipper config
