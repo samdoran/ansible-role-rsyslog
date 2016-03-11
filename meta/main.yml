@@ -2,9 +2,9 @@
 galaxy_info:
   author: Sam Doran
   description:
-  company: "Royall & Company"
+  company: ""
   license: MIT
-  min_ansible_version: 1.4
+  min_ansible_version: 1.9
 
   platforms:
   - name: EL
@@ -12,8 +12,10 @@ galaxy_info:
       - 5
       - 6
 
-  categories:
+  galaxy_tags:
     - system
+    - logs
+    - syslog
+    - rsyslog
 
 dependencies: []
-
