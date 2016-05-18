@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Sam Doran
-  description:
+  description: Install rsyslog on EL 5 and 6 as a shipper and/or collector.
   company: ""
   license: MIT
   min_ansible_version: 1.9
